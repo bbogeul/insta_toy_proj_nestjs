@@ -5,4 +5,9 @@ export class UserFindOneVo implements Partial<User> {
   username: string;
   email: string;
   status: USER_STATUS;
+  followerCount?: number;
+  followingCount?: number;
+  feedCount?: number;
+  profileImage?: string;
+  bio?: string;
 }

@@ -18,9 +18,22 @@ export class UserRepository {
    * @returns UserFindOneVo
    */
   public async findOneUser(id: number): Promise<UserFindOneVo> {
-    const user = await dataSource.manager.transaction(async (transaction) => {
-      return await this.userRepository.findOne({ where: { id: id } });
-    });
+    // transaction 예시
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .select([
+        'user.username',
+        'user.email',
+        'user.nickname',
+        'user.followingCount',
+        'user.feedCount',
+        'user.followerCount',
+        'user.bio',
+        'user.profileImage',
+        'user.status',
+      ])
+      .where('user.id = :id', { id: id })
+      .getOne();
 
     return user;
   }

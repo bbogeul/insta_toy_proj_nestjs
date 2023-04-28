@@ -31,7 +31,7 @@ export class BaseEntity<T> extends TypeOrmBaseEntity {
   @CreateDateColumn({
     name: 'created_at',
   })
-  createdAt?: Date = new Date();
+  createdAt?: Date;
 
   toJSON() {
     console.log(this);

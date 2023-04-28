@@ -43,7 +43,7 @@ export class User extends BaseUpdateEntity<User> {
     comment: '사용자 상태',
   })
   @IsEnum(USER_STATUS)
-  status: USER_STATUS = USER_STATUS.ACTIVE;
+  status: USER_STATUS;
 
   @Column({
     comment: '소개글',
@@ -52,22 +52,22 @@ export class User extends BaseUpdateEntity<User> {
 
   @Column()
   @IsEnum(GENDER)
-  gender?: GENDER = GENDER.NO_ANSWER;
+  gender?: GENDER;
 
   @Column({
     name: 'following_count',
   })
-  followingCount?: number = 0;
+  followingCount?: number;
 
   @Column({
     name: 'feed_count',
   })
-  feedCount?: number = 0;
+  feedCount?: number;
 
   @Column({
     name: 'follower_count',
   })
-  followerCount?: number = 0;
+  followerCount?: number;
 
   @Column({
     name: 'last_login_at',
