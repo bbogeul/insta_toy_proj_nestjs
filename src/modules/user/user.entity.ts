@@ -19,7 +19,7 @@ export class User extends BaseUpdateEntity<User> {
   })
   @IsNotEmpty()
   @IsEmail()
-  email: String;
+  email: string;
 
   @Column({
     name: 'profile_image',

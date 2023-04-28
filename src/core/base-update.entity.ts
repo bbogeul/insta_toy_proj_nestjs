@@ -5,5 +5,5 @@ export class BaseUpdateEntity<T> extends BaseEntity<T> {
   @UpdateDateColumn({
     name: 'updated_at',
   })
-  protected updatedAt?: Date;
+  updatedAt?: Date;
 }

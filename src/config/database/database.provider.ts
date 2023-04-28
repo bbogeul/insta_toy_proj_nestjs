@@ -6,10 +6,11 @@
 // ref: https://typeorm.io/multiple-data-sources
 
 import { dataSource } from './database.config';
+import { DATABASE_SOURCES } from './database.constant';
 
 export const databaseProviders = [
   {
-    provide: 'DATA_SOURCE', // connection풀 이름 -> 식별만 할 수 있는 이름이면 되요 ~~
+    provide: DATABASE_SOURCES.DATA_SOURCE, // connection풀 이름 -> 식별만 할 수 있는 이름이면 되요 ~~
     useFactory: async () => {
       dataSource;
       return dataSource.initialize();

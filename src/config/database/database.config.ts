@@ -1,11 +1,10 @@
-import { DataSource, getMetadataArgsStorage } from 'typeorm';
+import { DataSource } from 'typeorm';
+import { Entities } from './database.entities';
 
 export const dataSource = new DataSource({
   type: 'mysql',
-  entities: getMetadataArgsStorage().tables.map((tbl) => tbl.target),
-  // entities: [
-  //     __dirname + '/../**/*.entity{.ts,.js}',
-  // ],
+  //   entities: getMetadataArgsStorage().tables.map((tbl) => tbl.target),
+  entities: [...Entities],
   synchronize: false, // 상용에서는 절대로 true로하면 안됩니다. 데이터 다 날라가요
   replication: {
     master: {

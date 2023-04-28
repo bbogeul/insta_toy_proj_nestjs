@@ -8,12 +8,6 @@ import {
 export class BaseEntity<T> extends TypeOrmBaseEntity {
   constructor(partial?: Partial<T>) {
     super();
-    // 자바에 JsonIgnore Serialization 구현
-    Object.keys(partial).forEach((key) => {
-      if ((partial[key] && partial[key] === '') || !partial[key])
-        delete partial[key];
-    });
-    return this;
   }
 
   // DTO값으로 새로운 entity 생성 시 사용
@@ -32,10 +26,21 @@ export class BaseEntity<T> extends TypeOrmBaseEntity {
     unsigned: true,
     type: 'int',
   })
-  protected id: number;
+  id: number;
 
   @CreateDateColumn({
     name: 'created_at',
   })
-  protected createdAt?: Date = new Date();
+  createdAt?: Date = new Date();
+
+  toJSON() {
+    console.log(this);
+    Object.keys(this).map((key) => {
+      if ((this[key] && this[key] === '') || this[key] === null) {
+        delete this[key];
+      }
+    });
+
+    return this;
+  }
 }
