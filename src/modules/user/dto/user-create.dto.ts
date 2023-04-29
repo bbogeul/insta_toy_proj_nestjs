@@ -8,7 +8,7 @@ import {
   IsOptional,
   MinLength,
 } from 'class-validator';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { GENDER, IsEqualTo, IsPassword, USER_STATUS } from 'src/common';
 
 export class UserCreateDto
@@ -33,6 +33,9 @@ export class UserCreateDto
   @ApiPropertyOptional()
   @IsOptional()
   @MinLength(3)
+  @Transform((value: any) =>
+    value.value === '' ? (value.value = null) : value.value,
+  )
   @Expose()
   nickname?: string;
 
@@ -45,6 +48,7 @@ export class UserCreateDto
   @ApiProperty()
   @IsPassword()
   @IsEqualTo('password')
+  @Expose()
   passwordConfirm: string;
 
   @ApiProperty({ enum: USER_STATUS })
@@ -55,6 +59,9 @@ export class UserCreateDto
 
   @ApiPropertyOptional()
   @IsOptional()
+  @Transform((value: any) =>
+    value.value === '' ? (value.value = null) : value.value,
+  )
   @Expose()
   bio?: string;
 

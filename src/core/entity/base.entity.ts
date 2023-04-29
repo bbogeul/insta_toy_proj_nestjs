@@ -1,3 +1,4 @@
+import { classToPlain, instanceToPlain } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -8,15 +9,23 @@ import {
 export class BaseEntity<T> extends TypeOrmBaseEntity {
   constructor(partial?: Partial<T>) {
     super();
+    partial &&
+      Object.keys(partial).map((key) => {
+        console.log('mapping');
+        if (key !== 'id' && partial[key] !== undefined) {
+          this[key] = partial[key];
+        }
+      });
   }
 
-  // DTO값으로 새로운 entity 생성 시 사용
+  // Entity mapping
   set(partial: Object): this {
     partial &&
       Object.keys(partial).map((key) => {
         if (key !== 'id' && partial[key] !== undefined) {
           this[key] = partial[key];
         }
+        if (partial[key] && partial[key] === '') this[key] = null;
       });
     return this;
   }
@@ -34,13 +43,12 @@ export class BaseEntity<T> extends TypeOrmBaseEntity {
   createdAt?: Date;
 
   toJSON() {
-    console.log(this);
     Object.keys(this).map((key) => {
       if ((this[key] && this[key] === '') || this[key] === null) {
         delete this[key];
       }
     });
 
-    return this;
+    return instanceToPlain(this);
   }
 }

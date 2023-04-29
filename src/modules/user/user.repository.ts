@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { DB_CONST_REPOSITORY } from 'src/config';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
@@ -6,12 +6,14 @@ import { UserFindOneVo } from './vo';
 import { dataSource } from '../../config';
 import { UserCreateDto } from './dto';
 import { UserHistory } from '../user-history/user-history.entity';
+import { HashService } from '../auth/hash.service';
 
 @Injectable()
 export class UserRepository {
   constructor(
     @Inject(DB_CONST_REPOSITORY.USER)
     private readonly userRepository: Repository<User>,
+    private readonly hashService: HashService,
   ) {}
 
   // SELECTS
@@ -26,7 +28,9 @@ export class UserRepository {
     const user = await this.userRepository
       .createQueryBuilder('user')
       .select([
+        'user.id',
         'user.username',
+        'user.password', // 비번 확인을 위해서 select -> JSON 변환 시 리스에서 빠짐
         'user.email',
         'user.nickname',
         'user.followingCount',
@@ -50,7 +54,13 @@ export class UserRepository {
   public async findUserByEmail(email: string): Promise<User> {
     const user = await this.userRepository
       .createQueryBuilder('user')
-      .select('user.email')
+      .select([
+        'user.id',
+        'user.email',
+        'user.password',
+        'user.status',
+        'user.nickname',
+      ])
       .where('user.email = :email', { email: email })
       .getOne();
 
@@ -65,11 +75,32 @@ export class UserRepository {
   public async findUserByNickname(nickname: string): Promise<User> {
     const user = await this.userRepository
       .createQueryBuilder('user')
-      .select('user.nickname')
+      .select([
+        'user.id',
+        'user.email',
+        'user.password',
+        'user.status',
+        'user.nickname',
+      ])
       .where('user.nickname = :nickname', { nickname: nickname })
       .getOne();
 
     return user;
+  }
+
+  /**
+   *
+   * @param password
+   * @param hashedPassword
+   * @returns
+   */
+  public async comparePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    const check = await this.hashService.validate(password, hashedPassword);
+    if (!check) throw new BadRequestException('password does not match');
+    return check;
   }
 
   // INSERTS
@@ -81,8 +112,12 @@ export class UserRepository {
    */
   public async createUser(userCreateDto: UserCreateDto): Promise<User> {
     const user = await dataSource.transaction(async (transaction) => {
+      // 비번 암호화
+      userCreateDto.password = await this.hashService.hashString(
+        userCreateDto.password,
+      );
       let newUser = new User(userCreateDto);
-      console.log(newUser);
+
       newUser = await transaction.save(newUser);
       const userHistory = new UserHistory().set(newUser);
       userHistory.userId = newUser.id;

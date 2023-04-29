@@ -1,11 +1,11 @@
 import { IsEnum, IsNotEmpty } from 'class-validator';
 import { USER_LOGIN } from 'src/common';
-import { BaseUpdateEntity } from 'src/core';
+import { BaseEntity } from 'src/core';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { User } from '../user/user.entity';
 
 @Entity({ name: 'user_login_history' })
-export class UserLoginHistory extends BaseUpdateEntity<UserLoginHistory> {
+export class UserLoginHistory extends BaseEntity<UserLoginHistory> {
   @Column({
     name: 'user_id',
   })
@@ -21,7 +21,7 @@ export class UserLoginHistory extends BaseUpdateEntity<UserLoginHistory> {
     name: 'action_type',
   })
   @IsEnum(USER_LOGIN)
-  actionType?: USER_LOGIN = USER_LOGIN.LOGIN;
+  actionType?: USER_LOGIN;
 
   @ManyToOne((type) => User, (user) => user.userLoginHistory)
   @JoinColumn({ name: 'user_id' })

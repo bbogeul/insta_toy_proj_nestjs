@@ -3,17 +3,16 @@ dotenv.config();
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { CONST_STYLE } from './assets/_index';
-import Debug from 'debug';
-import { basename } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { urlencoded, json } from 'body-parser';
 import * as compression from 'compression';
 import * as packageInfo from '../package.json';
 import { Logger, ValidationPipe } from '@nestjs/common';
-import { ClassTransformOptions } from '@nestjs/common/interfaces/external/class-transform-options.interface';
 import { SwaggerModule, DocumentBuilder, ApiOAuth2 } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { ENVIRONMENT, dataSource } from './config';
+import * as cookieParser from 'cookie-parser';
+import { ClassTransformOptions } from 'class-transformer';
 
 // const debug = Debug(`app:${basename(__dirname)}:${basename(__filename)}`);
 
@@ -39,19 +38,6 @@ async function bootstrap() {
   if (process.env.NODE_ENV !== ENVIRONMENT.PRODUCTION)
     console.log('process - env ', process.env.NODE_ENV);
 
-  app.useGlobalPipes(
-    new ValidationPipe({
-      skipMissingProperties: true,
-      skipNullProperties: true,
-      skipUndefinedProperties: false,
-      validationError: { target: false, value: false }, // object 와 value 역전송 막기
-      transform: true,
-      transformOptions: {
-        excludeExtraneousValues: true,
-      } as ClassTransformOptions, // version문제로 실제 있지만 여기 없음.. down casting
-    }),
-  );
-
   // CORS 설장
   app.enableCors({
     origin: 'http://localhost:4200', // CORS variables, 배열로 지정하는게 맞음. 그리고 이 부분도 나중에 따로 뺄 수 있음
@@ -74,6 +60,21 @@ async function bootstrap() {
       customCss: CONST_STYLE,
     });
   }
+
+  app.use(cookieParser());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      skipUndefinedProperties: true,
+      skipMissingProperties: true,
+      skipNullProperties: true,
+      validationError: { target: false, value: false }, // object 와 value 역전송 막기
+      transform: true,
+      transformOptions: {
+        excludeExtraneousValues: true,
+      } as ClassTransformOptions,
+    }),
+  );
+
   app.enableShutdownHooks();
   await app.listen(process.env.SERVER_PORT || 4300, '0.0.0.0');
 

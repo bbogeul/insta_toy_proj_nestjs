@@ -20,7 +20,7 @@ export const IsEqualTo = (
       },
       validator: {
         validate(value: any, args: ValidationArguments) {
-          if (!value) {
+          if (!value || value === '') {
             return false;
           }
           const [retryAttempt] = args.constraints;

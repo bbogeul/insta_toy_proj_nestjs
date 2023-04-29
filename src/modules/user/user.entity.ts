@@ -36,7 +36,7 @@ export class User extends BaseUpdateEntity<User> {
 
   @Column()
   @IsNotEmpty()
-  @Exclude()
+  @Exclude({ toPlainOnly: true })
   password: string;
 
   @Column({

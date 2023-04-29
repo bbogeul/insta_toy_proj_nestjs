@@ -4,11 +4,12 @@ import { UserRepository } from './user.repository';
 import { DatabaseModule } from 'src/config';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
+import { HashService } from '../auth/hash.service';
 
 @Module({
   imports: [DatabaseModule],
   controllers: [UserController],
-  providers: [...userProviders, UserRepository, UserService],
-  exports: [],
+  providers: [...userProviders, UserRepository, UserService, HashService],
+  exports: [UserModule, UserRepository, UserService],
 })
 export class UserModule {}

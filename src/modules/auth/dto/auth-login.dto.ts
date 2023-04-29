@@ -1,5 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, Min, MinLength } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Expose } from 'class-transformer';
+import {
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { IsPassword } from 'src/common';
 
 export class AuthLoginDto {
@@ -7,10 +15,19 @@ export class AuthLoginDto {
   @ApiProperty()
   @IsNotEmpty()
   @MinLength(2)
-  username: string;
+  @IsEmail()
+  @Expose()
+  email: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsPassword()
+  @Expose()
   password: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  @Expose()
+  rememberMe?: boolean;
 }

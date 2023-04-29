@@ -6,9 +6,7 @@ import { User } from '../user/user.entity';
 
 @Entity({ name: 'user_history' })
 export class UserHistory extends BaseEntity<UserHistory> {
-  @Column({
-    name: 'user_id',
-  })
+  @Column({ name: 'user_id' })
   @IsNotEmpty()
   userId: number;
 
@@ -17,7 +15,7 @@ export class UserHistory extends BaseEntity<UserHistory> {
   })
   @IsNotEmpty()
   @IsEmail()
-  email: String;
+  email: string;
 
   @Column({
     name: 'profile_image',
@@ -32,15 +30,11 @@ export class UserHistory extends BaseEntity<UserHistory> {
   @Column()
   nickname?: string;
 
-  @Column()
-  @IsNotEmpty()
-  password: string;
-
   @Column({
     comment: '사용자 상태',
   })
   @IsEnum(USER_STATUS)
-  status: USER_STATUS = USER_STATUS.ACTIVE;
+  status: USER_STATUS;
 
   @Column({
     comment: '소개글',
@@ -49,9 +43,9 @@ export class UserHistory extends BaseEntity<UserHistory> {
 
   @Column()
   @IsEnum(GENDER)
-  gender?: GENDER = GENDER.NO_ANSWER;
+  gender?: GENDER;
 
   @ManyToOne((type) => User, (user) => user.userHistory)
-  @JoinColumn({ name: 'userId' })
+  @JoinColumn({ name: 'user_id' })
   user?: User;
 }
