@@ -4,16 +4,15 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   Res,
   UseGuards,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { AuthLoginDto } from './dto';
-import { Response } from 'express';
-import { BaseResponseVo, UserGuard } from 'src/core';
+import { Request, Response } from 'express';
+import { BaseResponseVo, RefreshGuard, UserGuard } from 'src/core';
 import { AuthTokenVo } from './vo/auth-token.vo';
 import { User } from '../user/user.entity';
 import { UserInfo } from '../../common';
@@ -46,13 +45,29 @@ export class AuthController {
    * @param user
    * @returns boolean
    */
-  @UseGuards(new UserGuard(true))
+  // true일 경우에 로그아웃 시도
+  @UseGuards(new UserGuard({ loggingOut: true }))
   @Post('logout')
   @HttpCode(HttpStatus.ACCEPTED)
   public async logout(
     @UserInfo() user: User,
   ): Promise<BaseResponseVo<boolean>> {
-    console.log(user, 'user');
     return new BaseResponseVo<boolean>(await this.authService.logout(user.id));
+  }
+
+  /**
+   * 새로운 토큰 발급받기
+   * @param request
+   * @returns AuthTokenVo
+   */
+  @UseGuards(new RefreshGuard())
+  @Post('refresh-token')
+  @HttpCode(HttpStatus.OK)
+  public async refreshToken(
+    @Req() request: Request,
+  ): Promise<BaseResponseVo<AuthTokenVo>> {
+    return new BaseResponseVo(
+      await this.authService.refreshUserToken(request.cookies['refresh-token']),
+    );
   }
 }

@@ -117,7 +117,7 @@ export class UserRepository {
         userCreateDto.password,
       );
       let newUser = new User(userCreateDto);
-
+      // TODO: profile image  생성
       newUser = await transaction.save(newUser);
       const userHistory = new UserHistory().set(newUser);
       userHistory.userId = newUser.id;
@@ -128,4 +128,6 @@ export class UserRepository {
 
     return user;
   }
+
+  // UPDATE
 }

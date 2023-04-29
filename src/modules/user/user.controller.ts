@@ -7,12 +7,15 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { UserFindOneVo } from './vo';
 import { UserCreateDto } from './dto';
-import { BaseResponseVo } from 'src/core';
+import { BaseResponseVo, UserGuard } from 'src/core';
+import { UserInfo } from 'src/common';
+import { User } from './user.entity';
 
 @Controller('user')
 @ApiTags('USER')
@@ -31,6 +34,22 @@ export class UserController {
   ): Promise<BaseResponseVo<UserFindOneVo>> {
     return new BaseResponseVo<UserFindOneVo>(
       await this.userService.findOne(id),
+    );
+  }
+
+  /**
+   * 본인 찾기
+   * @param user
+   * @returns UserFindOneVo
+   */
+  @UseGuards(new UserGuard())
+  @Get('find-me')
+  @HttpCode(HttpStatus.OK)
+  public async findMe(
+    @UserInfo() user: User,
+  ): Promise<BaseResponseVo<UserFindOneVo>> {
+    return new BaseResponseVo<UserFindOneVo>(
+      await this.userService.findOne(user.id),
     );
   }
 

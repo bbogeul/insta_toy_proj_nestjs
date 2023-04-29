@@ -1,4 +1,3 @@
-import { InjectRedis } from '@liaoliaots/nestjs-redis';
 import {
   ExecutionContext,
   Injectable,
@@ -15,11 +14,11 @@ const jwtService = new JwtService();
 
 @Injectable()
 export class UserGuard extends AuthGuard('jwt') {
-  constructor(logout?: boolean) {
+  constructor(isLoggingOut?: { loggingOut: boolean }) {
     // TODO:
     // 여기에 롤들 삽입
     super();
-    this.loggingOut = logout;
+    this.loggingOut = isLoggingOut ? isLoggingOut.loggingOut : false;
   }
 
   loggingOut: boolean = false;
@@ -70,12 +69,17 @@ export class UserGuard extends AuthGuard('jwt') {
     return user;
   }
 
+  /**
+   * 사용자 정보가 케시에 있는지 확인 없으면 로그인 안됨
+   * TODO: Cluster module 생성
+   * @param user
+   * @returns boolean
+   */
   private async checkRedis(user: any) {
     const newRedis = new Redis(
       Number(process.env.REDIS_PORT),
       process.env.REDIS_HOST,
     );
-    console.log(user, 'from cache');
     const cache = await newRedis.get(
       `${cacheConvention.user.refreshToken}${user.id}`,
     );

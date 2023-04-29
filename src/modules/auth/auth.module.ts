@@ -13,14 +13,6 @@ import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
-    process.env.NODE_ENV === ENVIRONMENT.PRODUCTION
-      ? CacheClusterModule
-      : RedisModule.forRoot({
-          config: {
-            host: process.env.REDIS_HOST,
-            port: Number(process.env.REDIS_PORT),
-          },
-        }),
     UserModule,
     UserLoginHistoryModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),

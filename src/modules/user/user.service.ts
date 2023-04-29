@@ -27,6 +27,10 @@ export class UserService {
 
   // INSERT SERVICES
 
+  /**
+   * 새로운 사용자 생성
+   * @param userCreateDto
+   */
   public async createUser(userCreateDto: UserCreateDto) {
     const checkEmail = await this.userRepository.findUserByEmail(
       userCreateDto.email,

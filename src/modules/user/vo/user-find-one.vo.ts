@@ -10,4 +10,5 @@ export class UserFindOneVo implements Partial<User> {
   feedCount?: number;
   profileImage?: string;
   bio?: string;
+  id: number;
 }

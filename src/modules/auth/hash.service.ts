@@ -26,10 +26,10 @@ export class HashService {
    * @returns hashed string
    */
   public async hashString(originalString: string): Promise<string> {
-    return hash(originalString, await this.genSalt());
+    return hash(originalString, await this._gen_salt());
   }
 
-  private async genSalt() {
+  private async _gen_salt() {
     return await genSalt(Number(process.env.BCRYPT_ROUND));
   }
 }
