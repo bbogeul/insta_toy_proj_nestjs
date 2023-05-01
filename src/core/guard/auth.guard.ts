@@ -48,12 +48,7 @@ export class UserGuard extends AuthGuard('jwt') {
     } else {
       accessToken = request.headers['authorization'].split(' ')[1];
     }
-    console.log(
-      jwtService.verify(accessToken, {
-        secret: process.env.JWT_SECRET_KEY,
-      }),
-      'accesstoken',
-    );
+
     try {
       jwtService.verify(accessToken, {
         secret: process.env.JWT_SECRET_KEY,
